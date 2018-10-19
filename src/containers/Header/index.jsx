@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
 
 import { connect } from 'react-redux';
 
@@ -12,17 +11,23 @@ export const Head = ({ ...props }) => {
     <header>
       <nav>
         <ul>
-          <Button variant="contained" color="primary">
-            <Link href="/login" to="/login">
-                Login
-            </Link>
-          </Button>
+          {
+            !logged
+              ? (
+                <li>
+                  <Link href="/login" to="/login">
+                    Login
+                  </Link>
+                </li>
+              )
+              : null
+          }
           {
             logged
               ? (
                 <li>
-                  <Link href="/profile" to="/profile">
-                  Profile
+                  <Link href="/" to="/">
+                    Collections
                   </Link>
                 </li>
               )

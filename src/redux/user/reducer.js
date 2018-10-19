@@ -1,5 +1,5 @@
 import {
-  assoc, pipe
+  assoc, assocPath, pipe
 } from 'ramda';
 
 import { createReducer } from '../../utils/reducerUtils';
@@ -23,9 +23,17 @@ export const initState = {
 };
 
 const userLoginRequest = () => assoc('userFetching', true);
-const userLoginSuccessed = response => pipe(
+const userLoginSuccessed = loginResponse => pipe(
+  assoc('avatar_url', loginResponse.avatar_url),
+  assoc('email', loginResponse.email),
+  assoc('first_name', loginResponse.first_name),
+  assoc('id', loginResponse.id),
+  assoc('last_name', loginResponse.last_name),
   assoc('logged', true),
-  assoc('email', response.email)
+  assocPath(['notification', 'show'], true),
+  assocPath(['notification', 'success'], `User ${loginResponse.username} successfully logged in!`),
+  assoc('userFetching', false),
+  assoc('username', loginResponse.username)
 );
 const userLoginFailed = error => pipe(
   assoc('userFetching', false),

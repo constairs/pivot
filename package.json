@@ -8,6 +8,8 @@
   },
   "dependencies": {
     "@material-ui/core": "^3.2.2",
+    "@material-ui/icons": "^3.0.1",
+    "axios": "^0.18.0",
     "connected-react-router": "^4.5.0",
     "history": "^4.7.2",
     "prop-types": "^15.6.2",
@@ -74,6 +76,11 @@
       "js",
       "json",
       "jsx"
+    ],
+    "modulePathIgnorePatterns": [
+      "./fixtures/",
+      "./setup",
+      "./mock.js"
     ]
   },
   "babel": {
@@ -96,6 +103,7 @@
       "import/no-default-export": "error",
       "import/prefer-default-export": "off",
       "function-paren-newline": "off",
+      "react/destructuring-assignment": [true, "always", { "ignoreClassFields": true }],
       "react/jsx-one-expression-per-line": "off",
       "max-len": [
         "error",

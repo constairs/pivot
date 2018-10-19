@@ -43,7 +43,7 @@ export const Navigation = () => (
       <Header />
       <Switch>
         <Route exact path="/login" component={LoginPage} />
-        <PrivateRoute component={CollectionsPage} path="/profile" />
+        <PrivateRoute component={CollectionsPage} path="/" />
       </Switch>
     </React.Fragment>
   </ConnectedRouter>
