@@ -63,7 +63,7 @@ class SignIn extends React.Component {
   submitForm = (e) => {
     e.preventDefault();
     this.props.userLoginRequest(this.state);
-    this.state.setState({
+    this.setState({
       email: '',
       password: ''
     });

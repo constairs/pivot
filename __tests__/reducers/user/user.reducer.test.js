@@ -23,5 +23,6 @@ describe('user create', () => {
   it('userLoginFailed', () => {
     const state = reducer(initState, actions.userLoginFailed(Error.message));
     expect(state.error).toBe(Error.message);
+    expect(state.userFetching).toBe(false);
   });
 });

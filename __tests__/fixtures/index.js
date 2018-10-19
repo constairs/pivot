@@ -6,3 +6,16 @@ export const userData = {
   last_name: 'Example',
   username: 'Example'
 };
+
+
+export const classCreateResponse = {
+  data: {
+    end_time: null,
+    id: '74c5ff62-a10e-4a56-b7d1-0a399dba87c2',
+    instructor: null,
+    media: [],
+    start_time: null,
+    title: '30 Minute Core Workout',
+    workout_plan_id: null
+  }
+};

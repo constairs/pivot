@@ -27,7 +27,7 @@ export const Head = ({ ...props }) => {
               ? (
                 <li>
                   <Link href="/" to="/">
-                    Collections
+                    Classes
                   </Link>
                 </li>
               )

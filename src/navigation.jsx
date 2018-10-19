@@ -4,7 +4,8 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
 import { LoginPage } from './containers/LoginPage';
-import { CollectionsPage } from './containers/CollectionsPage';
+import { ClassesPage } from './containers/ClassesPage';
+import { ClassPage } from './containers/ClassPage';
 import { history } from './redux/store';
 import { Header } from './containers/Header';
 
@@ -43,7 +44,8 @@ export const Navigation = () => (
       <Header />
       <Switch>
         <Route exact path="/login" component={LoginPage} />
-        <PrivateRoute component={CollectionsPage} path="/" />
+        <PrivateRoute component={ClassesPage} path="/" />
+        <PrivateRoute component={ClassPage} path="/class" />
       </Switch>
     </React.Fragment>
   </ConnectedRouter>
