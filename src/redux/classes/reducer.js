@@ -5,33 +5,28 @@ import {
   over,
   append,
   map,
-  filter
+  filter,
 } from 'ramda';
 
 import { createReducer } from '../../utils/reducerUtils';
 import * as TYPES from './types';
 
 export const initState = {
-  classesList: [],
-  collections: [],
-  end_time: null,
+  classSessions: [],
+  collectionList: [],
+  currectClass: {},
+  currentCollection: {},
   classesFetching: false,
-  id: '',
-  instructor: '',
-  media: '',
-  start_time: null,
-  title: '',
-  workout_plan_id: '',
   error: ''
 };
 
-const classesLens = lensProp('classes');
-const collectionsLens = lensProp('collections');
+const classesLens = lensProp('classSessions');
+const collectionsLens = lensProp('collectionList');
 
 const createClassRequest = () => assoc('classesFetching', true);
 const createClassSuccessed = createResponse => pipe(
   assoc('classesFetching', false),
-  over(classesLens, append(createResponse.data)),
+  over(classesLens, append(createResponse)),
 );
 const createClassFailed = error => pipe(
   assoc('classesFetching', false),
@@ -41,12 +36,16 @@ const createClassFailed = error => pipe(
 const getClassesRequest = () => assoc('classesFetching', true);
 const getClassesSuccessed = classes => pipe(
   assoc('classesFetching', false),
-  over(classesLens, append(classes)),
+  assoc('classSessions', classes)
 );
 const getClassesFailed = error => pipe(
   assoc('classesFetching', false),
   assoc('error', error)
 );
+
+const selectClass = classData => assoc('currectClass', classData);
+
+const selectCollection = collectionData => assoc('currentCollection', collectionData);
 
 const updateClassRequest = () => assoc('classesFetching', true);
 const updateClassSuccessed = updateResponse => pipe(
@@ -55,6 +54,7 @@ const updateClassSuccessed = updateResponse => pipe(
     classesLens,
     map(classItem => (classItem.id === updateResponse.id ? updateResponse : classItem))
   ),
+  assoc('currectClass', updateResponse)
 );
 const updateClassFailed = error => pipe(
   assoc('classesFetching', false),
@@ -77,7 +77,7 @@ const deleteClassFailed = error => pipe(
 const createCollectionRequest = () => assoc('classesFetching', true);
 const createCollectionSuccessed = createResponse => pipe(
   assoc('classesFetching', false),
-  over(collectionsLens, append(createResponse.data)),
+  over(collectionsLens, append(createResponse)),
 );
 const createCollectionFailed = error => pipe(
   assoc('classesFetching', false),
@@ -87,7 +87,7 @@ const createCollectionFailed = error => pipe(
 const getCollectionsRequest = () => assoc('classesFetching', true);
 const getCollectionsSuccessed = collections => pipe(
   assoc('classesFetching', false),
-  over(collectionsLens, append(collections)),
+  assoc('collectionList', collections),
 );
 const getCollectionsFailed = error => pipe(
   assoc('classesFetching', false),
@@ -117,6 +117,9 @@ const handlers = {
   [TYPES.GET_CLASSES_REQUEST]: getClassesRequest,
   [TYPES.GET_CLASSES_SUCCESSED]: getClassesSuccessed,
   [TYPES.GET_CLASSES_FAILED]: getClassesFailed,
+
+  [TYPES.SELECT_CLASS]: selectClass,
+  [TYPES.SELECT_COLLECTION]: selectCollection,
 
   [TYPES.UPDATE_CLASS_REQUEST]: updateClassRequest,
   [TYPES.UPDATE_CLASS_SUCCESSED]: updateClassSuccessed,

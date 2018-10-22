@@ -6,6 +6,7 @@ import { ConnectedRouter } from 'connected-react-router';
 import { LoginPage } from './containers/LoginPage';
 import { ClassesPage } from './containers/ClassesPage';
 import { ClassPage } from './containers/ClassPage';
+import { CollectionPage } from './containers/CollectionPage';
 import { history } from './redux/store';
 import { Header } from './containers/Header';
 
@@ -44,8 +45,9 @@ export const Navigation = () => (
       <Header />
       <Switch>
         <Route exact path="/login" component={LoginPage} />
-        <PrivateRoute component={ClassesPage} path="/" />
+        <PrivateRoute component={ClassesPage} exact path="/" />
         <PrivateRoute component={ClassPage} path="/class" />
+        <PrivateRoute component={CollectionPage} path="/collection" />
       </Switch>
     </React.Fragment>
   </ConnectedRouter>

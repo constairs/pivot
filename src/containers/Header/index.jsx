@@ -1,6 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import AppBar from '@material-ui/core/AppBar';
+import Button from '@material-ui/core/Button';
+import Toolbar from '@material-ui/core/Toolbar';
 
 import { connect } from 'react-redux';
 
@@ -8,34 +11,26 @@ import { connect } from 'react-redux';
 export const Head = ({ ...props }) => {
   const { logged } = props;
   return (
-    <header>
-      <nav>
-        <ul>
-          {
+    <AppBar position="static" color="default">
+      <Toolbar>
+        <Button>
+          <Link href="/" to="/">
+            Home
+          </Link>
+        </Button>
+        {
             !logged
               ? (
-                <li>
+                <Button color="primary" variant="outlined">
                   <Link href="/login" to="/login">
-                    Login
+                  Login
                   </Link>
-                </li>
+                </Button>
               )
               : null
           }
-          {
-            logged
-              ? (
-                <li>
-                  <Link href="/" to="/">
-                    Classes
-                  </Link>
-                </li>
-              )
-              : null
-          }
-        </ul>
-      </nav>
-    </header>
+      </Toolbar>
+    </AppBar>
   );
 };
 

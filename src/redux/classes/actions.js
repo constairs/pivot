@@ -25,8 +25,19 @@ export const getClassesFailed = error => ({
   payload: error
 });
 
-export const updateClassRequest = () => ({
+export const selectClass = classData => ({
+  type: TYPES.SELECT_CLASS,
+  payload: classData
+});
+
+export const selectCollection = collectionData => ({
+  type: TYPES.SELECT_COLLECTION,
+  payload: collectionData
+});
+
+export const updateClassRequest = updateData => ({
   type: TYPES.UPDATE_CLASS_REQUEST,
+  payload: updateData
 });
 export const updateClassSuccessed = updateResponse => ({
   type: TYPES.UPDATE_CLASS_SUCCESSED,
