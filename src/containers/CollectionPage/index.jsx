@@ -6,38 +6,46 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { history } from '../../redux/store';
 
 import {
-  updateClassRequest,
+  updateCollectionRequest,
 } from '../../redux/classes/actions';
 
 export class Page extends React.Component {
   state = {
-    classSelect: '',
+    classValue: '',
+    classesList: []
   };
 
-  changeInput = ({ target }) => {
-    const { name, value } = target;
+  handleChangeSelect = ({ target }) => {
+    const { value } = target;
     this.setState({
-      [name]: value,
+      classValue: value,
+      classesList: [...this.state.classesList, { title: value.title, id: value.id }]
     });
   }
 
-  handleClickEdit = () => {
-    history.push('/edit');
-  }
+  removeClass = (id) => {
+    this.setState({
+      classesList: this.state.classesList.filter(classItem => (classItem.id !== id)),
+    });
+  };
 
-  handleEditClass = (formData) => {
-    this.props.updateClassRequest(formData);
+  handleAddClass = (e) => {
+    e.preventDefault();
+    const data = {
+      class_sessions: this.state.classesList,
+    };
+    this.props.updateCollectionRequest(data);
   }
 
   render() {
     const { currentCollection, classSessions } = this.props.classSessions;
-    const { classSelect } = this.state;
+    const { classValue, classesList } = this.state;
 
     return (
       <div>
@@ -49,27 +57,54 @@ export class Page extends React.Component {
           <Typography component="h2" variant="h6">
             Add class to collection
           </Typography>
-          <FormControl>
-            <InputLabel htmlFor="class">Add class</InputLabel>
-            <Select
-              value={classSelect}
-              onChange={this.handleChange}
-              inputProps={{
-                name: 'class',
-                id: 'class',
-              }}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              {classSessions.map(classItem => (
-                <MenuItem key={classItem.id} value={classItem.id}>
-                  {classItem.title}
+          <form onSubmit={this.handleAddClass}>
+            <FormControl>
+              <InputLabel htmlFor="classValue">Add</InputLabel>
+
+              <Select
+                value={classValue}
+                onChange={this.handleChangeSelect}
+                inputProps={{
+                  name: 'classValue',
+                  id: 'classValue',
+                }}
+              >
+                <MenuItem value="">
+                  <em>None</em>
                 </MenuItem>
-              ))
+                {classSessions.map(classItem => (
+                  <MenuItem key={classItem.id} value={classItem}>
+                    {classItem.title}
+                  </MenuItem>
+                ))
                 }
-            </Select>
-          </FormControl>
+              </Select>
+            </FormControl>
+            <div>
+              {
+                classesList.map(classItem => (
+                  <div key={classItem.id}>
+                    {classItem.title}
+                    <button
+                      type="button"
+                      onClick={() => this.removeClass(classItem.id)}
+                    >
+                      x
+                    </button>
+                  </div>
+                ))
+              }
+            </div>
+            <br />
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              name="classModal"
+            >
+              Add class
+            </Button>
+          </form>
         </Paper>
       </div>
     );
@@ -77,13 +112,13 @@ export class Page extends React.Component {
 }
 
 Page.propTypes = {
-  updateClassRequest: PropTypes.func.isRequired,
+  updateCollectionRequest: PropTypes.func.isRequired,
   classSessions: PropTypes.objectOf(PropTypes.any).isRequired
 };
 
 export const CollectionPage = connect(
   state => ({ classSessions: state.classSessions }),
   dispatch => ({
-    updateClassRequest: bindActionCreators(updateClassRequest, dispatch),
+    updateCollectionRequest: bindActionCreators(updateCollectionRequest, dispatch),
   })
 )(Page);

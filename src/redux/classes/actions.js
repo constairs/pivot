@@ -85,8 +85,9 @@ export const getCollectionsFailed = error => ({
   payload: error
 });
 
-export const updateCollectionRequest = () => ({
+export const updateCollectionRequest = updateData => ({
   type: TYPES.UPDATE_COLLECTION_REQUEST,
+  payload: updateData
 });
 export const updateCollectionSuccessed = updateResponse => ({
   type: TYPES.UPDATE_COLLECTION_SUCCESSED,

@@ -224,7 +224,7 @@ export function* getAllCollectionsSaga() {
   }
 }
 
-export function* updateCollectionSaga() {
+export function* updateCollectionSaga(action) {
   try {
     // const updateResponse = yield call(updateCollection, action.payload);
     const updateResponse = {
@@ -232,7 +232,7 @@ export function* updateCollectionSaga() {
         class_sessions: [
           {
             end_time: null,
-            id: 'd0e71908-38ea-4e4f-bf15-c5e8e498b249',
+            id: action.payload.class_sessions.id,
             instructor: null,
             media: [],
             start_time: null,
