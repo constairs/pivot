@@ -20,7 +20,7 @@
     "prop-types": "^15.6.2",
     "ramda": "^0.25.0",
     "react": "16.5.0",
-    "react-dnd": "^5.0.0",
+    "react-beautiful-dnd": "^9.0.2",
     "react-dom": "16.5.0",
     "react-hot-loader": "^4.3.11",
     "react-redux": "^5.0.7",

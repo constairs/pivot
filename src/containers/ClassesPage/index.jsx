@@ -13,8 +13,14 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import withStyles from '@material-ui/core/styles/withStyles';
+import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import styled from 'styled-components';
 import { history } from '../../redux/store';
 
 import {
@@ -27,13 +33,36 @@ import {
   selectCollection
 } from '../../redux/classes/actions';
 
+const StyledPaper = styled(Paper)({
+  padding: '40px',
+});
+
+const Preloader = styled.div`
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  background-color: rgba(255,255,255, .67);
+  left: 0;
+  top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+  transition: .2s;
+  opacity: ${props => (props.fetching ? '100' : '0')};
+  display: none;
+`;
+
 export class Page extends React.Component {
-  state = {
-    classModal: false,
-    collectionModal: false,
-    classTitle: '',
-    collectonTitle: ''
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      classModal: false,
+      collectionModal: false,
+      classTitle: '',
+      collectonTitle: '',
+    };
+  }
 
   componentDidMount() {
     this.props.getClassesRequest();
@@ -106,15 +135,18 @@ export class Page extends React.Component {
       classModal, collectionModal, classTitle, collectonTitle
     } = this.state;
     const { classes } = this.props;
-    const { classSessions, collectionList } = this.props.classSessions;
+    const { classSessions, collectionList, classesFetching } = this.props.classSessions;
 
     return (
       <div>
+        <Preloader fetching={classesFetching}>
+          <CircularProgress className={classes.progress} size={50} />
+        </Preloader>
         <CssBaseline />
-        <Grid container spacing={16}>
-          <Grid className={classes.grid} item xs={12}>
-            <Paper>
-              <Typography component="h1" variant="h5">
+        <StyledPaper>
+          <Grid container spacing={16}>
+            <Grid className={classes.grid} item xs={6}>
+              <Typography component="h1" variant="h5" gutterBottom>
               Classes
               </Typography>
               {
@@ -135,14 +167,13 @@ export class Page extends React.Component {
                     </List>
                   )
                   : (
-                    <Typography component="p" variant="h5">
+                    <Typography component="p" variant="h5" gutterBottom>
                     No classes
                     </Typography>
                   )
               }
               <Button
                 type="button"
-                fullWidth
                 variant="contained"
                 color="primary"
                 onClick={this.handleOpen}
@@ -150,44 +181,56 @@ export class Page extends React.Component {
               >
                 New Class
               </Button>
-              <Typography component="h1" variant="h5">
-                Collections
-              </Typography>
+            </Grid>
+            <Grid item xs={6}>
               {collectionList
                 ? (
                   <List component="nav">
                     {
-                      collectionList.map(collectionItem => (
+                      collectionList.map(collectionsItem => (
                         <ListItem
-                          key={collectionItem.title}
-                          button
-                          onClick={() => this.handleSelectCollection(collectionItem)}
+                          key={collectionsItem.title}
                         >
-                          <ListItemText primary={collectionItem.title} />
+                          <ExpansionPanel>
+                            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                              <Typography>{collectionsItem.title}</Typography>
+                            </ExpansionPanelSummary>
+                            <ExpansionPanelDetails>
+                              {
+                              collectionsItem.class_sessions
+                                ? (
+                                  <List component="nav">
+                                    {
+                                      collectionsItem.class_sessions.map(classItem => (
+                                        <ListItem
+                                          key={classItem.id}
+                                          button
+                                          onClick={() => this.handleSelectClass(classItem)}
+                                        >
+                                          <ListItemText primary={classItem.title} />
+                                        </ListItem>
+                                      ))
+                                    }
+                                  </List>
+                                )
+                                : (
+                                  <Typography component="p" variant="h5" gutterBottom>
+                                  No classes in this collection
+                                  </Typography>
+                                )
+                              }
+                            </ExpansionPanelDetails>
+                          </ExpansionPanel>
                         </ListItem>
                       ))
                     }
                   </List>
                 )
-                : (
-                  <Typography component="p" variant="h5">
-                    No collections
-                  </Typography>
-                )
-              }
-              <Button
-                type="button"
-                fullWidth
-                variant="contained"
-                color="primary"
-                onClick={this.handleOpen}
-                name="collectionModal"
-              >
-                New Collection
-              </Button>
-            </Paper>
+                : null
+            }
+            </Grid>
           </Grid>
-        </Grid>
+        </StyledPaper>
 
         <Modal
           aria-labelledby="simple-modal-title"
@@ -246,7 +289,6 @@ export class Page extends React.Component {
     );
   }
 }
-
 
 const styles = theme => ({
   paper: {

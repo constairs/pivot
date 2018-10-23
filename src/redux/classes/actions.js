@@ -48,8 +48,9 @@ export const updateClassFailed = error => ({
   payload: error
 });
 
-export const deleteClassRequest = () => ({
+export const deleteClassRequest = classId => ({
   type: TYPES.DELETE_CLASS_REQUEST,
+  payload: classId
 });
 export const deleteClassSuccessed = deleteResponse => ({
   type: TYPES.DELETE_CLASS_SUCCESSED,

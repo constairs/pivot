@@ -3,6 +3,9 @@ import {
   // call,
   takeLatest
 } from 'redux-saga/effects';
+
+import { push } from 'connected-react-router';
+
 import {
   CREATE_CLASS_REQUEST,
   GET_CLASSES_REQUEST,
@@ -149,6 +152,7 @@ export function* deleteClassSaga(action) {
   try {
     // const deleteResponse = yield call(deleteClass, action.payload);
     yield put(deleteClassSuccessed(action.payload));
+    yield put(push('/'));
   } catch (error) {
     yield put(deleteClassFailed(error.message));
   }
@@ -203,15 +207,6 @@ export function* getAllCollectionsSaga() {
               start_time: null,
               title: 'My New Plan Again',
               workout_plan_id: '636e2214-fc52-42c8-a155-f4215ed4ce2a'
-            },
-            {
-              end_time: null,
-              id: 'd0e71908-38ea-4e4f-bf15-c5e8e498b249',
-              instructor: null,
-              media: [],
-              start_time: null,
-              title: 'Example Plan',
-              workout_plan_id: 'e78ad8d3-b158-4952-a15b-c3c297071492'
             },
           ],
           title: 'Cool Classes'

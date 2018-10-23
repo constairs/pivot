@@ -4,36 +4,41 @@ import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import Button from '@material-ui/core/Button';
 import Toolbar from '@material-ui/core/Toolbar';
-
+import styled from 'styled-components';
 import { connect } from 'react-redux';
 
+const StyledLink = styled(Link)`
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  color: #000;
+  text-decoration: underline;
+  :hover {
+    text-decoration: none;
+  }
+`;
 
 export const Head = ({ ...props }) => {
   const { logged } = props;
   return (
     <AppBar position="static" color="default">
       <Toolbar>
-        <Button>
-          <Link href="/" to="/">
+        <StyledLink href="/" to="/">
             Home
-          </Link>
-        </Button>
+        </StyledLink>
         {
-            !logged
-              ? (
-                <Button color="primary" variant="outlined">
-                  <Link href="/login" to="/login">
-                  Login
-                  </Link>
-                </Button>
-              )
-              : null
-          }
+          !logged
+            ? (
+              <Button color="primary" variant="outlined">
+                <StyledLink href="/login" to="/login">
+                Login
+                </StyledLink>
+              </Button>
+            )
+            : null
+        }
       </Toolbar>
     </AppBar>
   );
 };
-
 
 Head.propTypes = {
   logged: PropTypes.bool.isRequired,

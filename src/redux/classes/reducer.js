@@ -66,8 +66,9 @@ const deleteClassSuccessed = deleteResponse => pipe(
   assoc('classesFetching', false),
   over(
     classesLens,
-    filter(classItem => (classItem.id !== deleteResponse.id))
+    filter(classItem => (classItem.id !== deleteResponse))
   ),
+  assoc('currentClass', {}),
 );
 const deleteClassFailed = error => pipe(
   assoc('classesFetching', false),
@@ -103,6 +104,7 @@ const updateCollectionSuccessed = updateResponse => pipe(
       collectionItem => (collectionItem.id === updateResponse.id ? updateResponse : collectionItem)
     )
   ),
+  assoc('currentCollection', updateResponse),
 );
 const updateCollectionFailed = error => pipe(
   assoc('classesFetching', false),

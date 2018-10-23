@@ -6,8 +6,8 @@ import axios from 'axios';
 // const authorization = btoa(`${username}:${password}`);
 
 export const axiosInstance = axios.create({
-  // baseURL: 'http://dev.trainwithpivot.com/',
-  baseURL: 'https://0fc332f3-1d8d-4ca2-9858-8507aaf1089c.mock.pstmn.io',
+  baseURL: 'http://dev.trainwithpivot.com/',
+  // baseURL: 'https://0fc332f3-1d8d-4ca2-9858-8507aaf1089c.mock.pstmn.io',
   // headers: {
   //   Authorization: `Basic ${authorization}`
   // },

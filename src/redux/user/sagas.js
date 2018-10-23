@@ -1,6 +1,5 @@
 import { put, call, takeLatest } from 'redux-saga/effects';
 import { push } from 'connected-react-router';
-// import { REHYDRATE } from 'redux-persist';
 import {
   USER_LOGIN_REQUEST,
 } from './types';
@@ -24,5 +23,4 @@ export function* userLoginSaga(action) {
 
 export function* userSagas() {
   yield takeLatest(USER_LOGIN_REQUEST, userLoginSaga);
-  // yield takeLatest(REHYDRATE, userReconnectSaga);
 }
