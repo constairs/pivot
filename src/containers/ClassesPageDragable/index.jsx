@@ -54,6 +54,20 @@ const StyledListItem = styled(ListItem)`
   display: block!important;
 `;
 
+const Classes = styled.div`
+  margin-bottom: 20px;
+`;
+
+const Collections = styled.div`
+  margin-bottom: 20px;
+`;
+
+const DraggableListItem = styled(ListItem)`
+  background-color: #3f51b5;
+  color: #ffffff;
+  margin: 5px 0;
+`;
+
 const reorder = (
   list,
   startIndex,
@@ -70,19 +84,24 @@ const moveAndReorder = (
   destinationList,
   destinationEndIndex) => {
   const sourceResult = Array.from(sourceList);
-  // designate the draggable to be removed from sourceResult
-  const [removed] = sourceResult.splice(sourceStartIndex, 1);
-  // because we used splice, sourceresult no longer contains the element that was moved out of it
-
   const destinationResult = Array.from(destinationList);
-  // add the draggable that we removed from the sourceList into the destinationResult
-  destinationResult.splice(destinationEndIndex, 0, removed);
 
-  // return the two arrays
-  // sourceResult should be the source droppable but without the draggable that got moved
-  // destinationResult should be the destination droppable with the moved draggable added
-  // in the correct position
-  return [sourceResult, destinationResult];
+  if (destinationResult.find(item => item.id === sourceResult[sourceStartIndex].id)) {
+    console.log('Class already in collection!');
+    return destinationResult;
+  }
+
+  destinationResult.splice(destinationEndIndex, 0, sourceResult[sourceStartIndex]);
+
+  return destinationResult;
+};
+
+const removeAndReorder = (
+  sourceList,
+  sourceStartIndex) => {
+  const sourceResult = Array.from(sourceList);
+  sourceResult.splice(sourceStartIndex, 1);
+  return sourceResult;
 };
 
 export class Page extends React.Component {
@@ -95,20 +114,23 @@ export class Page extends React.Component {
       collectonTitle: '',
       classesItems: props.classSessions.classSessions,
       collectionsItems: props.classSessions.collectionList,
+      changedByUser: false
     };
   }
 
-  static getDervivedStateFromProps(props, state) {
-    if (props.classSessions.classSessions !== state.classesItems) {
+  static getDerivedStateFromProps(props, state) {
+    if (props.classSessions.classSessions !== state.classesItems && !state.changedByUser) {
       return {
         classesItems: props.classSessions.classSessions,
-        collectionsItems: props.classSessions.collectionList
+        collectionsItems: props.classSessions.collectionList,
+        classesInCollectionItems: props.classSessions.collectionList.class_sessions,
       };
     }
-    if (props.classSessions.collections !== state.collectionsItems) {
+    if (props.classSessions.collectionList !== state.collectionsItems && !state.changedByUser) {
       return {
         classesItems: props.classSessions.classSessions,
-        collectionsItems: props.classSessions.collectionList
+        collectionsItems: props.classSessions.collectionList,
+        classesInCollectionItems: props.classSessions.collectionList.class_sessions,
       };
     }
     return null;
@@ -185,73 +207,52 @@ export class Page extends React.Component {
       return;
     }
 
-    // prepare to compare the source to the destination
     const { source } = result;
     const { destination } = result;
     const sourceId = source.droppableId;
     const destinationId = destination.droppableId;
 
-    console.log(`moving from ${sourceId} to ${destinationId}`);
-
-    // just a short form of the two item arrays from state
     let { classesItems } = this.state;
-    let { collectionsItems } = this.state;
+    const { collectionsItems } = this.state;
 
-    // If the place we moved the draggable out of
-    // is different from the place we moved it to, execute this
     if (sourceId !== destinationId) {
-      console.log(`Hey, looks like source droppable (${sourceId}) is different from destination droppable (${destinationId})`);
-      // we only have two lists- droppable1 and droppable2
-      // so if the source is droppable1, then the destination is droppable2
       if (sourceId === 'droppable1') {
         const sourceList = classesItems;
-        const destinationList = collectionsItems;
-        // Note: source.index and destination.index are generated onDragEnd-
-        // source.index is the index where the dragged item started out in the source droppable
-        // destination.index is the index where the dragged
-        // item was placed by the user, in the destination droppable
-        // after we pass the parameters to moveAndReorder, we will get back an array of two arrays
-        // lists[0] will be the source droppable with the moved draggable taken out
-        // lists[1] will be the target droppable with
-        // the moved draggable added in at the correct index
-        const lists = moveAndReorder(
+        const destinationItem = collectionsItems.find(item => item.id === destinationId);
+        const list = moveAndReorder(
           sourceList,
           source.index,
-          destinationList,
+          destinationItem.class_sessions,
           destination.index
         );
-        // so now we set the state to our two lists
-        this.setState({ classesItems: lists[0], collectionsItems: lists[1] });
-      } else if (sourceId === 'droppable2') {
-        const sourceList = collectionsItems;
-        const destinationList = classesItems;
-        const lists = moveAndReorder(
-          sourceList,
-          source.index,
-          destinationList,
-          destination.index
+        const resList = collectionsItems.map(
+          item => (item.id === destinationId ? { ...item, class_sessions: list } : item)
         );
-
-        this.setState({ collectionsItems: lists[0], classesItems: lists[1] });
+        this.setState({ collectionsItems: resList, changedByUser: true });
+      } else {
+        const sourceItem = collectionsItems.find(item => item.id === sourceId);
+        const list = removeAndReorder(sourceItem.class_sessions, source.index);
+        const resList = collectionsItems.map(
+          item => (item.id === sourceId ? { ...item, class_sessions: list } : item)
+        );
+        this.setState({ collectionsItems: resList, changedByUser: true });
       }
-    } else { // If it was moved within the same list, then just reorder that list
-      console.log('Source is the same as destination');
-      console.log(`reordering ${sourceId}`);
-      if (sourceId === 'droppable1') {
-        classesItems = reorder(
-          this.state.classesItems,
-          source.index,
-          destination.index);
-
-        this.setState({ classesItems });
-      } else if (sourceId === 'droppable2') {
-        collectionsItems = reorder(
-          this.state.collectionsItems,
-          source.index,
-          destination.index);
-
-        this.setState({ collectionsItems });
-      }
+    } else if (sourceId === 'droppable1') {
+      classesItems = reorder(
+        this.state.classesItems,
+        source.index,
+        destination.index);
+      this.setState({ classesItems, changedByUser: true });
+    } else if (sourceId !== 'droppable1' && destinationId === 'removeArea') {
+      const sourceItem = collectionsItems.find(item => item.id === sourceId);
+      const reorderRes = reorder(
+        sourceItem.class_sessions,
+        source.index,
+        destination.index);
+      const resList = collectionsItems.map(
+        item => (item.id === sourceId ? { ...item, class_sessions: reorderRes } : item)
+      );
+      this.setState({ collectionsItems: resList, changedByUser: true });
     }
   }
 
@@ -261,11 +262,11 @@ export class Page extends React.Component {
       collectionModal,
       classTitle,
       collectonTitle,
-      // classesItems,
-      // collectionsItems
+      classesItems,
+      collectionsItems,
     } = this.state;
     const { classes } = this.props;
-    const { classSessions, collectionList, classesFetching } = this.props.classSessions;
+    const { classesFetching } = this.props.classSessions;
 
     return (
       <div>
@@ -274,29 +275,34 @@ export class Page extends React.Component {
         </Preloader>
         <CssBaseline />
         <StyledPaper>
-          <Grid container spacing={16}>
-            <DragDropContext onDragEnd={this.onDragEnd}>
+          <DragDropContext onDragEnd={this.onDragEnd}>
+            {/* <Droppable droppableId="removeArea">
+              {
+                (provided, snapshot) => (
+                  <div ref={provided.innerRef}> */}
+            <Grid container spacing={16}>
+              {/* {provided.placeholder} */}
               <Grid className={classes.grid} item xs={6}>
-                <Typography component="h1" variant="h5" gutterBottom>
-              Classes
+                <Typography color="primary" component="h1" variant="h4" gutterBottom>
+                  Classes
                 </Typography>
                 {
-                classSessions
+                classesItems
                   ? (
-                    <Droppable droppableId="droppable1">
-                      {(provided, snapshot) => (
-                        <div
-                          inverted={snapshot.isDraggingOver}
-                          tertiary={snapshot.isDraggingOver}
-                        >
-                          <List
-                            component="nav"
-                          >
-                            <div
-                              ref={provided.innerRef}
-                            >
-                              {
-                            classSessions.map((classItem, index) => (
+                    <StyledPaper>
+                      <Droppable droppableId="droppable1">
+                        {
+                          // eslint-disable-next-line
+                          (provided, snapshot) => (
+                            <Classes>
+                              <List
+                                component="nav"
+                              >
+                                <div
+                                  ref={provided.innerRef}
+                                >
+                                  {
+                            classesItems.map((classItem, index) => (
                               <Draggable
                                 key={classItem.id}
                                 draggableId={classItem.id}
@@ -310,22 +316,24 @@ export class Page extends React.Component {
                                       {...provided.draggableProps}
                                       {...provided.dragHandleProps}
                                     >
-                                      <ListItem
+                                      <DraggableListItem
                                         key={classItem.id}
+                                        onDrag={snapshot.isDraggingOver}
                                       >
                                         <ListItemText primary={classItem.title} />
-                                      </ListItem>
+                                      </DraggableListItem>
                                       {provided.placeholder}
                                     </div>
                                   )}
                               </Draggable>
                             ))
                           }
-                            </div>
-                          </List>
-                        </div>
-                      )}
-                    </Droppable>
+                                </div>
+                              </List>
+                            </Classes>
+                          )}
+                      </Droppable>
+                    </StyledPaper>
                   )
                   : (
                     <Typography component="p" variant="h5" gutterBottom>
@@ -344,77 +352,87 @@ export class Page extends React.Component {
                 </Button>
               </Grid>
               <Grid item xs={6}>
-                {collectionList
+                <Typography color="primary" component="h1" variant="h4" gutterBottom>
+                  Collections
+                </Typography>
+                {collectionsItems
                   ? (
                     <List component="nav">
                       {
-                      collectionList.map(collectionsItem => (
+                      collectionsItems.map(collectionsItem => (
                         <StyledListItem
                           key={collectionsItem.title}
                         >
                           <Typography component="h1" variant="h5" gutterBottom>{collectionsItem.title}</Typography>
-                          <div>
-                            {
-                              collectionsItem.class_sessions
-                                ? (
-                                  <Droppable droppableId="droppable2">
-                                    {(provided, snapshot) => (
-                                      <div
-                                        inverted={snapshot.isDraggingOver}
-                                        tertiary={snapshot.isDraggingOver}
-                                      >
-                                        <List
-                                          component="nav"
-                                        >
-                                          <div ref={provided.innerRef}>
-                                            {
-                                          collectionsItem.class_sessions.map((classItem, index) => (
-                                            <Draggable key={classItem.id} draggableId={`droppable2${classItem.id}`} index={index}>
+                          <Collections>
+                            <StyledPaper>
+                              <Droppable droppableId={collectionsItem.id}>
+                                {
+                                // eslint-disable-next-line
+                                  (provided, snapshot) => (
+                                    <div ref={provided.innerRef}>
+                                      {
+                                        collectionsItem.class_sessions
+                                          ? (
+                                            <List
+                                              component="nav"
+                                            >
                                               {
-                                                // eslint-disable-next-line
-                                                (provided, snapshot) => (
-                                                  <div>
-                                                    <div
-                                                      ref={provided.innerRef}
-                                                      {...provided.draggableProps}
-                                                      {...provided.dragHandleProps}
-                                                    >
-                                                      <ListItem
-                                                        key={classItem.id}
-                                                      >
-                                                        <ListItemText primary={classItem.title} />
-                                                      </ListItem>
-                                                    </div>
-                                                    {provided.placeholder}
-                                                  </div>
-                                                )}
-                                            </Draggable>
-                                          ))
-                                        }
-                                          </div>
-                                        </List>
-                                      </div>
-                                    )}
-                                  </Droppable>
-                                )
-                                : (
-                                  <Typography component="p" variant="h5" gutterBottom>
-                              No classes in this collection
-                                  </Typography>
-                                )
-                          }
-                          </div>
+                                                collectionsItem.class_sessions.map((classItem, index) => (
+                                                  <Draggable key={classItem.id} draggableId={`${collectionsItem.id}${classItem.id}`} index={index}>
+                                                    {
+                                                      // eslint-disable-next-line
+                                                      (provided, snapshot) => (
+                                                        <div
+                                                          ref={provided.innerRef}
+                                                          {...provided.draggableProps}
+                                                          {...provided.dragHandleProps}
+                                                        >
+                                                          <ListItem
+                                                            key={classItem.id}
+                                                          >
+                                                            <ListItemText primary={classItem.title} />
+                                                          </ListItem>
+                                                          {provided.placeholder}
+                                                        </div>
+                                                      )
+                                                    }
+                                                  </Draggable>
+                                                ))
+                                                }
+                                            </List>
+                                          ) : (
+                                            <Typography component="p" variant="h5" gutterBottom>
+                                              No classes in this collection
+                                            </Typography>
+                                          )
+                                      }
+                                      {provided.placeholder}
+                                    </div>
+                                  )
+                                }
+                              </Droppable>
+                            </StyledPaper>
+                          </Collections>
 
                         </StyledListItem>
                       ))
                     }
                     </List>
                   )
-                  : null
+                  : (
+                    <Typography component="p" variant="h5" gutterBottom>
+                      No collections
+                    </Typography>
+                  )
             }
               </Grid>
-            </DragDropContext>
-          </Grid>
+            </Grid>
+            {/* </div>
+                )
+              } */}
+            {/* </Droppable> */}
+          </DragDropContext>
         </StyledPaper>
 
         <Modal

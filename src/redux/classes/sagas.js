@@ -209,7 +209,55 @@ export function* getAllCollectionsSaga() {
               workout_plan_id: '636e2214-fc52-42c8-a155-f4215ed4ce2a'
             },
           ],
-          title: 'Cool Classes'
+          title: 'Cool Classes',
+          id: 'collection1'
+        },
+        {
+          class_sessions: [
+            {
+              end_time: null,
+              id: '0ce98a81-9250-4d75-87b4-1f66c7306110',
+              instructor: {
+                avatar_url: 'http://immedilet-invest.com/wp-content/uploads/2016/01/user-placeholder.jpg',
+                email: 'josh@trainwithpivot.com',
+                first_name: 'Joshua',
+                id: '5aa214c9-8f44-425f-b82a-e6de17ca81e9',
+                last_name: 'Augustin',
+                username: 'august'
+              },
+              media: [
+                {
+                  index: 0,
+                  type_id: 9,
+                  url: 'https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8'
+                },
+                {
+                  index: 0,
+                  type_id: 11,
+                  url: 'https://s3-us-west-1.amazonaws.com/pivot-development/result.jsonl'
+                }
+              ],
+              start_time: null,
+              title: 'My New Plan Again',
+              workout_plan_id: '636e2214-fc52-42c8-a155-f4215ed4ce2a'
+            },
+            {
+              end_time: null,
+              id: 'd0e71908-38ea-4e4f-bf15-c5e8e498b249',
+              instructor: null,
+              media: [],
+              start_time: null,
+              title: 'Example Plan',
+              workout_plan_id: 'e78ad8d3-b158-4952-a15b-c3c297071492'
+            },
+          ],
+          title: 'Cool Classes2',
+          id: 'collection2'
+        },
+        {
+          class_sessions: [],
+          title: 'Cool Classes3',
+          id: 'collection3'
         }
       ]
     };
