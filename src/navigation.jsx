@@ -4,7 +4,6 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
 import { LoginPage } from './containers/LoginPage';
-// import { ClassesPage } from './containers/ClassesPage';
 import { ClassesPageDragable } from './containers/ClassesPageDragable';
 import { ClassPage } from './containers/ClassPage';
 import { CollectionPage } from './containers/CollectionPage';
@@ -46,7 +45,6 @@ export const Navigation = () => (
       <Header />
       <Switch>
         <Route exact path="/login" component={LoginPage} />
-        {/* <PrivateRoute component={ClassesPage} exact path="/" /> */}
         <PrivateRoute component={ClassesPageDragable} exact path="/" />
         <PrivateRoute component={ClassPage} path="/class" />
         <PrivateRoute component={CollectionPage} path="/collection" />

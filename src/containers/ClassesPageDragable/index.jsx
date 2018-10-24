@@ -8,16 +8,11 @@ import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import Modal from '@material-ui/core/Modal';
-import Grid from '@material-ui/core/Grid';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import withStyles from '@material-ui/core/styles/withStyles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import styled from 'styled-components';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { history } from '../../redux/store';
 
 import {
@@ -30,9 +25,11 @@ import {
   selectCollection
 } from '../../redux/classes/actions';
 
-const StyledPaper = styled(Paper)({
-  padding: '40px',
-});
+import { DragNDropArea } from '../../components/DragNDropArea';
+
+const StyledPaper = styled(Paper)`
+  padding: 40px;
+`;
 
 const Preloader = styled.div`
   width: 100%;
@@ -50,60 +47,6 @@ const Preloader = styled.div`
   display: none;
 `;
 
-const StyledListItem = styled(ListItem)`
-  display: block!important;
-`;
-
-const Classes = styled.div`
-  margin-bottom: 20px;
-`;
-
-const Collections = styled.div`
-  margin-bottom: 20px;
-`;
-
-const DraggableListItem = styled(ListItem)`
-  background-color: #3f51b5;
-  color: #ffffff;
-  margin: 5px 0;
-`;
-
-const reorder = (
-  list,
-  startIndex,
-  endIndex) => {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-  return result;
-};
-
-const moveAndReorder = (
-  sourceList,
-  sourceStartIndex,
-  destinationList,
-  destinationEndIndex) => {
-  const sourceResult = Array.from(sourceList);
-  const destinationResult = Array.from(destinationList);
-
-  if (destinationResult.find(item => item.id === sourceResult[sourceStartIndex].id)) {
-    console.log('Class already in collection!');
-    return destinationResult;
-  }
-
-  destinationResult.splice(destinationEndIndex, 0, sourceResult[sourceStartIndex]);
-
-  return destinationResult;
-};
-
-const removeAndReorder = (
-  sourceList,
-  sourceStartIndex) => {
-  const sourceResult = Array.from(sourceList);
-  sourceResult.splice(sourceStartIndex, 1);
-  return sourceResult;
-};
-
 export class Page extends React.Component {
   constructor(props) {
     super(props);
@@ -111,10 +54,7 @@ export class Page extends React.Component {
       classModal: false,
       collectionModal: false,
       classTitle: '',
-      collectonTitle: '',
-      classesItems: props.classSessions.classSessions,
-      collectionsItems: props.classSessions.collectionList,
-      changedByUser: false
+      collectonTitle: ''
     };
   }
 
@@ -202,71 +142,19 @@ export class Page extends React.Component {
     history.push('/collection');
   }
 
-  onDragEnd = (result) => {
-    if (!result.destination) {
-      return;
-    }
-
-    const { source } = result;
-    const { destination } = result;
-    const sourceId = source.droppableId;
-    const destinationId = destination.droppableId;
-
-    let { classesItems } = this.state;
-    const { collectionsItems } = this.state;
-
-    if (sourceId !== destinationId) {
-      if (sourceId === 'droppable1') {
-        const sourceList = classesItems;
-        const destinationItem = collectionsItems.find(item => item.id === destinationId);
-        const list = moveAndReorder(
-          sourceList,
-          source.index,
-          destinationItem.class_sessions,
-          destination.index
-        );
-        const resList = collectionsItems.map(
-          item => (item.id === destinationId ? { ...item, class_sessions: list } : item)
-        );
-        this.setState({ collectionsItems: resList, changedByUser: true });
-      } else {
-        const sourceItem = collectionsItems.find(item => item.id === sourceId);
-        const list = removeAndReorder(sourceItem.class_sessions, source.index);
-        const resList = collectionsItems.map(
-          item => (item.id === sourceId ? { ...item, class_sessions: list } : item)
-        );
-        this.setState({ collectionsItems: resList, changedByUser: true });
-      }
-    } else if (sourceId === 'droppable1') {
-      classesItems = reorder(
-        this.state.classesItems,
-        source.index,
-        destination.index);
-      this.setState({ classesItems, changedByUser: true });
-    } else if (sourceId !== 'droppable1' && destinationId === 'removeArea') {
-      const sourceItem = collectionsItems.find(item => item.id === sourceId);
-      const reorderRes = reorder(
-        sourceItem.class_sessions,
-        source.index,
-        destination.index);
-      const resList = collectionsItems.map(
-        item => (item.id === sourceId ? { ...item, class_sessions: reorderRes } : item)
-      );
-      this.setState({ collectionsItems: resList, changedByUser: true });
-    }
-  }
-
   render() {
     const {
       classModal,
       collectionModal,
       classTitle,
-      collectonTitle,
-      classesItems,
-      collectionsItems,
+      collectonTitle
     } = this.state;
     const { classes } = this.props;
-    const { classesFetching } = this.props.classSessions;
+    const {
+      classesFetching,
+      classSessions,
+      collectionList
+    } = this.props.classSessions;
 
     return (
       <div>
@@ -275,166 +163,11 @@ export class Page extends React.Component {
         </Preloader>
         <CssBaseline />
         <StyledPaper>
-          <DragDropContext onDragEnd={this.onDragEnd}>
-            {/* <Droppable droppableId="removeArea">
-              {
-                (provided, snapshot) => (
-                  <div ref={provided.innerRef}> */}
-            <Grid container spacing={16}>
-              {/* {provided.placeholder} */}
-              <Grid className={classes.grid} item xs={6}>
-                <Typography color="primary" component="h1" variant="h4" gutterBottom>
-                  Classes
-                </Typography>
-                {
-                classesItems
-                  ? (
-                    <StyledPaper>
-                      <Droppable droppableId="droppable1">
-                        {
-                          // eslint-disable-next-line
-                          (provided, snapshot) => (
-                            <Classes>
-                              <List
-                                component="nav"
-                              >
-                                <div
-                                  ref={provided.innerRef}
-                                >
-                                  {
-                            classesItems.map((classItem, index) => (
-                              <Draggable
-                                key={classItem.id}
-                                draggableId={classItem.id}
-                                index={index}
-                              >
-                                {
-                                  // eslint-disable-next-line
-                                  (provided, snapshot) => (
-                                    <div
-                                      ref={provided.innerRef}
-                                      {...provided.draggableProps}
-                                      {...provided.dragHandleProps}
-                                    >
-                                      <DraggableListItem
-                                        key={classItem.id}
-                                        onDrag={snapshot.isDraggingOver}
-                                      >
-                                        <ListItemText primary={classItem.title} />
-                                      </DraggableListItem>
-                                      {provided.placeholder}
-                                    </div>
-                                  )}
-                              </Draggable>
-                            ))
-                          }
-                                </div>
-                              </List>
-                            </Classes>
-                          )}
-                      </Droppable>
-                    </StyledPaper>
-                  )
-                  : (
-                    <Typography component="p" variant="h5" gutterBottom>
-                    No classes
-                    </Typography>
-                  )
-              }
-                <Button
-                  type="button"
-                  variant="contained"
-                  color="primary"
-                  onClick={this.handleOpen}
-                  name="classModal"
-                >
-                New Class
-                </Button>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography color="primary" component="h1" variant="h4" gutterBottom>
-                  Collections
-                </Typography>
-                {collectionsItems
-                  ? (
-                    <List component="nav">
-                      {
-                      collectionsItems.map(collectionsItem => (
-                        <StyledListItem
-                          key={collectionsItem.title}
-                        >
-                          <Typography component="h1" variant="h5" gutterBottom>{collectionsItem.title}</Typography>
-                          <Collections>
-                            <StyledPaper>
-                              <Droppable droppableId={collectionsItem.id}>
-                                {
-                                // eslint-disable-next-line
-                                  (provided, snapshot) => (
-                                    <div ref={provided.innerRef}>
-                                      {
-                                        collectionsItem.class_sessions
-                                          ? (
-                                            <List
-                                              component="nav"
-                                            >
-                                              {
-                                                collectionsItem.class_sessions.map((classItem, index) => (
-                                                  <Draggable key={classItem.id} draggableId={`${collectionsItem.id}${classItem.id}`} index={index}>
-                                                    {
-                                                      // eslint-disable-next-line
-                                                      (provided, snapshot) => (
-                                                        <div
-                                                          ref={provided.innerRef}
-                                                          {...provided.draggableProps}
-                                                          {...provided.dragHandleProps}
-                                                        >
-                                                          <ListItem
-                                                            key={classItem.id}
-                                                          >
-                                                            <ListItemText primary={classItem.title} />
-                                                          </ListItem>
-                                                          {provided.placeholder}
-                                                        </div>
-                                                      )
-                                                    }
-                                                  </Draggable>
-                                                ))
-                                                }
-                                            </List>
-                                          ) : (
-                                            <Typography component="p" variant="h5" gutterBottom>
-                                              No classes in this collection
-                                            </Typography>
-                                          )
-                                      }
-                                      {provided.placeholder}
-                                    </div>
-                                  )
-                                }
-                              </Droppable>
-                            </StyledPaper>
-                          </Collections>
-
-                        </StyledListItem>
-                      ))
-                    }
-                    </List>
-                  )
-                  : (
-                    <Typography component="p" variant="h5" gutterBottom>
-                      No collections
-                    </Typography>
-                  )
-            }
-              </Grid>
-            </Grid>
-            {/* </div>
-                )
-              } */}
-            {/* </Droppable> */}
-          </DragDropContext>
+          <DragNDropArea
+            classSessions={classSessions}
+            collectionList={collectionList}
+          />
         </StyledPaper>
-
         <Modal
           aria-labelledby="simple-modal-title"
           aria-describedby="simple-modal-description"
