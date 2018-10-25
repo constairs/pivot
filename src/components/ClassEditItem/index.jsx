@@ -22,10 +22,11 @@ const StyledPaper = styled(Paper)({
 export class ClassEditItem extends React.Component {
   constructor(props) {
     super(props);
+    const date = new Date();
     this.state = {
       title: props.classSession.title || '',
-      startTime: '2018-10-21T22:00',
-      endTime: '2018-10-21T22:00'
+      startTime: new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().split('.')[0],
+      endTime: new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().split('.')[0]
     };
   }
 
