@@ -145,7 +145,7 @@ export class Page extends React.Component {
         <CssBaseline />
         <StyledPaper>
           <Grid container spacing={16}>
-            <Grid className={classes.grid} item xs={6}>
+            <Grid item xs={6}>
               <Typography component="h1" variant="h5" gutterBottom>
               Classes
               </Typography>
@@ -301,9 +301,6 @@ const styles = theme => ({
     backgroundColor: theme.palette.background.paper,
     boxShadow: theme.shadows[5],
     padding: theme.spacing.unit * 4,
-  },
-  grid: {
-    padding: 20
   },
   typography: {
     useNextVariants: true,

@@ -23,15 +23,15 @@ import {
 const StyledChip = styled(Chip)({
   marginTop: '10px',
   marginLeft: '5px',
-  marginRight: '5px',
+  marginRight: '5px'
 });
 
 const StyledPaper = styled(Paper)({
-  padding: '40px',
+  padding: '40px'
 });
 
 const StyledSelect = styled(Select)({
-  width: '200px',
+  width: '200px'
 });
 
 export class Page extends React.Component {
@@ -45,7 +45,7 @@ export class Page extends React.Component {
     if (value) {
       this.setState(state => ({
         classesList: [...state.classesList, { title: value.title, id: value.id }],
-        classValue: '',
+        classValue: ''
       })
       );
     }
@@ -67,7 +67,7 @@ export class Page extends React.Component {
     this.props.updateCollectionRequest(data);
     this.setState({
       classesList: [],
-      classValue: '',
+      classValue: ''
     });
   }
 
@@ -92,7 +92,6 @@ export class Page extends React.Component {
                       <ListItem
                         key={classItem.id}
                         button
-                        onClick={() => this.handleSelectClass(classItem)}
                       >
                         <ListItemText primary={classItem.title} />
                       </ListItem>
@@ -164,6 +163,6 @@ Page.propTypes = {
 export const CollectionPage = connect(
   state => ({ classSessions: state.classSessions }),
   dispatch => ({
-    updateCollectionRequest: bindActionCreators(updateCollectionRequest, dispatch),
+    updateCollectionRequest: bindActionCreators(updateCollectionRequest, dispatch)
   })
 )(Page);

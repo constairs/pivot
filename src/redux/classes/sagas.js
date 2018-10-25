@@ -272,18 +272,9 @@ export function* updateCollectionSaga(action) {
     // const updateResponse = yield call(updateCollection, action.payload);
     const updateResponse = {
       data: {
-        class_sessions: [
-          {
-            end_time: null,
-            id: action.payload.class_sessions.id,
-            instructor: null,
-            media: [],
-            start_time: null,
-            title: 'Workout Plan',
-            workout_plan_id: 'e78ad8d3-b158-4952-a15b-c3c297071492'
-          }
-        ],
-        title: 'Cool Classes'
+        class_sessions: action.payload.addedClasses,
+        title: action.payload.collectionId,
+        id: action.payload.collectionId,
       }
     };
     yield put(updateCollectionSuccessed(updateResponse.data));

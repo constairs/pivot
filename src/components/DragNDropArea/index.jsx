@@ -11,8 +11,19 @@ import { DragDropContext } from 'react-beautiful-dnd';
 import { DraggableClassesList } from '../DraggableClassesList';
 import { DraggableCollectionsList } from '../DraggableCollectionsList';
 
-const StyledPaper = styled(Paper)`
+const Collection = styled(Paper)`
   padding: 40px;
+  margin-bottom: 20px;
+`;
+
+const CollectionTitle = styled(Typography)`
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  :hover {
+    text-decoration: underline;
+  };
 `;
 
 const reorder = (
@@ -56,8 +67,6 @@ export class DragNDropArea extends React.Component {
     this.state = {
       classesItems: props.classSessions,
       collectionsItems: props.collectionList,
-      // eslint-disable-next-line
-      changedByUser: false
     };
   }
 
@@ -66,14 +75,12 @@ export class DragNDropArea extends React.Component {
       return {
         classesItems: props.classSessions,
         collectionsItems: props.collectionList,
-        classesInCollectionItems: props.collectionList.class_sessions,
       };
     }
     if (props.collectionList !== state.collectionsItems && !state.changedByUser) {
       return {
         classesItems: props.classSessions,
         collectionsItems: props.collectionList,
-        classesInCollectionItems: props.collectionList.class_sessions,
       };
     }
     return null;
@@ -90,8 +97,8 @@ export class DragNDropArea extends React.Component {
           collectionsItems: state.collectionsItems.map(
             item => (item.id === sourceId ? { ...item, class_sessions: list } : item)
           ),
-          changedByUser: true
         }));
+        this.props.updateCollection({ collectionId: sourceId, addedClasses: list });
       }
       return;
     }
@@ -119,9 +126,8 @@ export class DragNDropArea extends React.Component {
         );
         this.setState({
           collectionsItems: resList,
-          // eslint-disable-next-line
-          changedByUser: true
         });
+        this.props.updateCollection({ collectionId: destinationId, addedClasses: list });
       }
     } else if (sourceId === 'classesDrop') {
       classesItems = reorder(
@@ -130,8 +136,6 @@ export class DragNDropArea extends React.Component {
         destination.index);
       this.setState({
         classesItems,
-        // eslint-disable-next-line
-        changedByUser: true
       });
     } else {
       const sourceItem = collectionsItems.find(item => item.id === sourceId);
@@ -144,10 +148,38 @@ export class DragNDropArea extends React.Component {
       );
       this.setState({
         collectionsItems: resList,
-        // eslint-disable-next-line
-        changedByUser: true
       });
+      this.props.updateCollection({ collectionId: destinationId, addedClasses: reorderRes });
     }
+  }
+
+  removeClassFromCollection = (removeData) => {
+    const collectionItem = this.state.collectionsItems.find(
+      item => item.id === removeData.collectionId
+    );
+    const classesList = collectionItem.class_sessions.filter(
+      item => item.id !== removeData.classId
+    );
+    this.setState(state => ({
+      collectionsItems: state.collectionsItems.map(
+        item => (item.id === removeData.collectionId
+          ? { ...item, class_sessions: classesList }
+          : item
+        )
+      ),
+    }));
+    this.props.updateCollection({
+      collectionId: removeData.collectionId,
+      addedClasses: classesList
+    });
+  }
+
+  handleClick = ({ currentTarget }) => {
+    this.props.onClickAddBtn(currentTarget);
+  }
+
+  clickClassItem = (classItem) => {
+    this.props.onClickClass(classItem);
   }
 
   render() {
@@ -164,24 +196,22 @@ export class DragNDropArea extends React.Component {
               Classes
             </Typography>
             {
-            classesItems ? (
-              <StyledPaper>
-                <DraggableClassesList classesItems={classesItems} droppableId="classesDrop" />
-              </StyledPaper>
-            ) : (
-              <Typography component="p" variant="h5" gutterBottom>
-                No classes
-              </Typography>
-            )
-          }
+              classesItems ? (
+                <DraggableClassesList clickEditClass={this.clickClassItem} classesItems={classesItems} droppableId="classesDrop" />
+              ) : (
+                <Typography component="p" variant="h5" gutterBottom>
+                  No classes
+                </Typography>
+              )
+            }
             <Button
               type="button"
               variant="contained"
               color="primary"
-              onClick={this.handleOpen}
+              onClick={this.handleClick}
               name="classModal"
             >
-            New Class
+              New Class
             </Button>
           </Grid>
           <Grid item xs={6}>
@@ -192,22 +222,32 @@ export class DragNDropArea extends React.Component {
               <List component="nav">
                 {
                   collectionsItems.map(collectionsItem => (
-                    <StyledPaper key={collectionsItem.title}>
-                      <Typography component="h1" variant="h5" gutterBottom>{collectionsItem.title}</Typography>
+                    <Collection key={collectionsItem.title}>
+                      <CollectionTitle component="h1" variant="h5" gutterBottom onClick={() => (this.props.onClickCollection(collectionsItem))}>{collectionsItem.title}</CollectionTitle>
                       <DraggableCollectionsList
                         collectionsItem={collectionsItem}
                         droppableId={collectionsItem.id}
+                        removeClass={this.removeClassFromCollection}
                       />
-                    </StyledPaper>
+                    </Collection>
                   ))
                 }
               </List>
             ) : (
               <Typography component="p" variant="h5" gutterBottom>
-                  No collections
+                No collections
               </Typography>
             )
             }
+            <Button
+              type="button"
+              variant="contained"
+              color="primary"
+              onClick={this.handleClick}
+              name="collectionModal"
+            >
+              New Collection
+            </Button>
           </Grid>
         </Grid>
       </DragDropContext>
@@ -217,5 +257,9 @@ export class DragNDropArea extends React.Component {
 
 DragNDropArea.propTypes = {
   classSessions: PropTypes.arrayOf(PropTypes.any).isRequired,
-  collectionList: PropTypes.arrayOf(PropTypes.any).isRequired
+  collectionList: PropTypes.arrayOf(PropTypes.any).isRequired,
+  onClickAddBtn: PropTypes.func.isRequired,
+  updateCollection: PropTypes.func.isRequired,
+  onClickClass: PropTypes.func.isRequired,
+  onClickCollection: PropTypes.func.isRequired
 };

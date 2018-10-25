@@ -22,7 +22,8 @@ import {
   getCollectionsRequest,
   updateClassRequest,
   selectClass,
-  selectCollection
+  selectCollection,
+  updateCollectionRequest
 } from '../../redux/classes/actions';
 
 import { DragNDropArea } from '../../components/DragNDropArea';
@@ -58,30 +59,12 @@ export class Page extends React.Component {
     };
   }
 
-  static getDerivedStateFromProps(props, state) {
-    if (props.classSessions.classSessions !== state.classesItems && !state.changedByUser) {
-      return {
-        classesItems: props.classSessions.classSessions,
-        collectionsItems: props.classSessions.collectionList,
-        classesInCollectionItems: props.classSessions.collectionList.class_sessions,
-      };
-    }
-    if (props.classSessions.collectionList !== state.collectionsItems && !state.changedByUser) {
-      return {
-        classesItems: props.classSessions.classSessions,
-        collectionsItems: props.classSessions.collectionList,
-        classesInCollectionItems: props.classSessions.collectionList.class_sessions,
-      };
-    }
-    return null;
-  }
-
   componentDidMount() {
     this.props.getClassesRequest();
     this.props.getCollectionsRequest();
   }
 
-  handleOpen = ({ currentTarget }) => {
+  handleOpen = (currentTarget) => {
     const { name } = currentTarget;
     this.setState({
       [name]: true
@@ -142,6 +125,10 @@ export class Page extends React.Component {
     history.push('/collection');
   }
 
+  updateCollection = (addData) => {
+    this.props.updateCollectionRequest(addData);
+  }
+
   render() {
     const {
       classModal,
@@ -166,6 +153,10 @@ export class Page extends React.Component {
           <DragNDropArea
             classSessions={classSessions}
             collectionList={collectionList}
+            onClickAddBtn={this.handleOpen}
+            updateCollection={this.updateCollection}
+            onClickClass={this.handleSelectClass}
+            onClickCollection={this.handleSelectCollection}
           />
         </StyledPaper>
         <Modal
@@ -255,7 +246,8 @@ Page.propTypes = {
   getCollectionsRequest: PropTypes.func.isRequired,
   updateClassRequest: PropTypes.func.isRequired,
   selectClass: PropTypes.func.isRequired,
-  selectCollection: PropTypes.func.isRequired
+  selectCollection: PropTypes.func.isRequired,
+  updateCollectionRequest: PropTypes.func.isRequired
 };
 
 export const StyledPage = withStyles(styles)(Page);
@@ -270,5 +262,6 @@ export const ClassesPageDragable = connect(
     updateClassRequest: bindActionCreators(updateClassRequest, dispatch),
     selectClass: bindActionCreators(selectClass, dispatch),
     selectCollection: bindActionCreators(selectCollection, dispatch),
+    updateCollectionRequest: bindActionCreators(updateCollectionRequest, dispatch),
   })
 )(StyledPage);
