@@ -77,12 +77,6 @@ export class DragNDropArea extends React.Component {
         collectionsItems: props.collectionList,
       };
     }
-    if (props.collectionList !== state.collectionsItems && !state.changedByUser) {
-      return {
-        classesItems: props.classSessions,
-        collectionsItems: props.collectionList,
-      };
-    }
     return null;
   }
 

@@ -40,10 +40,32 @@ const userLoginFailed = error => pipe(
   assoc('error', error)
 );
 
+const userLogoutRequest = () => assoc('userFetching', true);
+const userLogoutSuccessed = () => pipe(
+  assoc('avatar_url', ''),
+  assoc('email', ''),
+  assoc('first_name', ''),
+  assoc('id', ''),
+  assoc('last_name', ''),
+  assoc('logged', false),
+  assocPath(['notification', 'show'], true),
+  assocPath(['notification', 'success'], 'Successfully logout!'),
+  assoc('userFetching', false),
+  assoc('username', '')
+);
+const userLogoutFailed = error => pipe(
+  assoc('userFetching', false),
+  assoc('error', error)
+);
+
 const handlers = {
   [TYPES.USER_LOGIN_REQUEST]: userLoginRequest,
   [TYPES.USER_LOGIN_SUCCESSED]: userLoginSuccessed,
-  [TYPES.USER_LOGIN_FAILED]: userLoginFailed
+  [TYPES.USER_LOGIN_FAILED]: userLoginFailed,
+
+  [TYPES.USER_LOGOUT_REQUEST]: userLogoutRequest,
+  [TYPES.USER_LOGOUT_SUCCESSED]: userLogoutSuccessed,
+  [TYPES.USER_LOGOUT_FAILED]: userLogoutFailed,
 };
 
 export const user = createReducer(initState, handlers);

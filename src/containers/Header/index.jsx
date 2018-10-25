@@ -6,14 +6,17 @@ import Button from '@material-ui/core/Button';
 import Toolbar from '@material-ui/core/Toolbar';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { userLogoutRequest } from '../../redux/user/actions';
 
 const StyledLink = styled(Link)`
   font-family: "Roboto", "Helvetica", "Arial", sans-serif;
   color: #000;
+  margin-right: 15px;
   text-decoration: underline;
   :hover {
     text-decoration: none;
-  }
+  };
 `;
 
 export const Head = ({ ...props }) => {
@@ -25,12 +28,21 @@ export const Head = ({ ...props }) => {
             Home
         </StyledLink>
         {
+          logged
+            ? (
+              <Button color="primary" variant="outlined" onClick={() => (props.userLogoutRequest())}>
+                Logout
+              </Button>
+            )
+            : null
+        }
+        {
           !logged
             ? (
               <Button color="primary" variant="outlined">
-                <StyledLink href="/login" to="/login">
-                Login
-                </StyledLink>
+                <Link href="/login" to="/login">
+                  Login
+                </Link>
               </Button>
             )
             : null
@@ -42,8 +54,12 @@ export const Head = ({ ...props }) => {
 
 Head.propTypes = {
   logged: PropTypes.bool.isRequired,
+  userLogoutRequest: PropTypes.func.isRequired,
 };
 
 export const Header = connect(
-  state => ({ logged: state.persistedUser.logged })
+  state => ({ logged: state.persistedUser.logged }),
+  dispatch => ({
+    userLogoutRequest: bindActionCreators(userLogoutRequest, dispatch)
+  })
 )(Head);

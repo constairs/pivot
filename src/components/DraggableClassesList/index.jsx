@@ -38,42 +38,41 @@ export class DraggableClassesList extends React.Component {
           {
             // eslint-disable-next-line
             (provided, snapshot) => (
-
               <List component="nav">
                 <div ref={provided.innerRef}>
                   {
-                      classesItems.map((classItem, index) => (
-                        <Draggable
-                          key={classItem.id}
-                          draggableId={classItem.id}
-                          index={index}
-                        >
-                          {
-                            // eslint-disable-next-line
-                            (provided, snapshot) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
+                    classesItems.map((classItem, index) => (
+                      <Draggable
+                        key={classItem.id}
+                        draggableId={classItem.id}
+                        index={index}
+                      >
+                        {
+                          // eslint-disable-next-line
+                          (provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                            >
+                              <DraggableListItem
+                                key={classItem.id}
+                                onDrag={snapshot.isDraggingOver}
                               >
-                                <DraggableListItem
-                                  key={classItem.id}
-                                  onDrag={snapshot.isDraggingOver}
+                                <DraggableListItemText primary={classItem.title} />
+                                <IconButton onClick={() => (
+                                  this.props.clickEditClass(classItem)
+                                )}
                                 >
-                                  <DraggableListItemText primary={classItem.title} />
-                                  <IconButton onClick={() => (
-                                    this.props.clickEditClass(classItem)
-                                  )}
-                                  >
-                                    <EditIcon fontSize="small" />
-                                  </IconButton>
-                                </DraggableListItem>
-                                {provided.placeholder}
-                              </div>
-                            )}
-                        </Draggable>
-                      ))
-                    }
+                                  <EditIcon fontSize="small" />
+                                </IconButton>
+                              </DraggableListItem>
+                              {provided.placeholder}
+                            </div>
+                          )}
+                      </Draggable>
+                    ))
+                  }
                   {provided.placeholder}
                 </div>
               </List>

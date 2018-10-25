@@ -180,7 +180,7 @@ export class Page extends React.Component {
                 variant="contained"
                 color="primary"
               >
-                  Create
+                Create
               </Button>
             </form>
           </div>

@@ -26,7 +26,7 @@ const DraggableListItem = styled(ListItem)`
 const DraggableListItemText = styled(ListItemText)`
   > span {
     color: #ffffff;
-  }
+  };
 `;
 
 export class DraggableCollectionsList extends React.Component {
