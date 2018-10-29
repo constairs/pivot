@@ -7,13 +7,30 @@ import FormControl from '@material-ui/core/FormControl';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import LockIcon from '@material-ui/icons/LockOutlined';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import withStyles from '@material-ui/core/styles/withStyles';
 import { connect } from 'react-redux';
+import styled from 'styled-components';
 import { bindActionCreators } from 'redux';
 
 import { userLoginRequest } from '../../redux/user/actions';
+
+const Preloader = styled.div`
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  background-color: rgba(255,255,255, .67);
+  left: 0;
+  top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+  transition: .2s;
+  display: ${props => (props.fetching ? 'flex' : 'none')};
+`;
 
 const styles = theme => ({
   layout: {
@@ -63,17 +80,17 @@ class SignIn extends React.Component {
   submitForm = (e) => {
     e.preventDefault();
     this.props.userLoginRequest(this.state);
-    this.setState({
-      email: '',
-      password: ''
-    });
   }
 
   render() {
     const { classes } = this.props;
+    const { userFetching } = this.props.user;
     const { email, password } = this.state;
     return (
       <React.Fragment>
+        <Preloader fetching={userFetching}>
+          <CircularProgress className={classes.progress} size={50} />
+        </Preloader>
         <CssBaseline />
         <main className={classes.layout}>
           <Paper className={classes.paper}>
@@ -118,6 +135,7 @@ class SignIn extends React.Component {
 
 SignIn.propTypes = {
   classes: PropTypes.objectOf(PropTypes.any).isRequired,
+  user: PropTypes.objectOf(PropTypes.any).isRequired,
 };
 
 const Page = withStyles(styles)(SignIn);
