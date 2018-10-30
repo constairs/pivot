@@ -1,7 +1,8 @@
 import {
   put,
   call,
-  takeLatest
+  takeLatest,
+  delay
 } from 'redux-saga/effects';
 
 import { push } from 'connected-react-router';
@@ -53,18 +54,28 @@ export function* createClassSaga(action) {
 }
 
 export function* getAllClassesSaga() {
-  try {
-    const classesList = yield call(getAllClasses);
-    yield put(getClassesSuccessed(classesList.data.data));
-  } catch (error) {
-    yield put(getClassesFailed(error));
+  for (let i = 0; i < 5; i + 1) {
+    try {
+      const classesList = yield call(getAllClasses);
+      yield put(getClassesSuccessed(classesList.data.data));
+      break;
+    } catch (error) {
+      if (error.response.status === 500 && i < 4) {
+        yield delay(1000);
+        const classesList = yield call(getAllClasses);
+        yield put(getClassesSuccessed(classesList.data.data));
+      } else {
+        yield put(getClassesFailed(error));
+        break;
+      }
+    }
   }
 }
 
 export function* updateClassSaga(action) {
   try {
     const updateResponse = yield call(updateClass, action.payload);
-    yield put(updateClassSuccessed(updateResponse));
+    yield put(updateClassSuccessed(updateResponse.data.data));
   } catch (error) {
     yield put(updateClassFailed(error.message));
   }
@@ -90,23 +101,39 @@ export function* createCollectionSaga(action) {
 }
 
 export function* getAllCollectionsSaga() {
-  try {
-    const collectionsList = yield call(getAllCollections);
-    yield put(getCollectionsSuccessed(collectionsList.data.data));
-  } catch (error) {
-    yield put(getCollectionsFailed(error));
+  for (let i = 0; i < 5; i + 1) {
+    try {
+      const collectionsList = yield call(getAllCollections);
+      yield put(getCollectionsSuccessed(collectionsList.data.data));
+      break;
+    } catch (error) {
+      if (error.response.status === 500 && i < 4) {
+        yield delay(1000);
+        const collectionsList = yield call(getAllCollections);
+        yield put(getCollectionsSuccessed(collectionsList.data.data));
+      } else {
+        yield put(getCollectionsFailed(error));
+        break;
+      }
+    }
   }
 }
 
 export function* updateCollectionSaga(action) {
-  try {
-    const updateResponse = yield call(updateCollection, action.payload);
-    yield put(updateCollectionSuccessed(updateResponse.data.data));
-  } catch (error) {
-    yield put(updateCollectionFailed(error));
-    if (error.response.status === 500) {
+  for (let i = 0; i < 5; i + 1) {
+    try {
       const updateResponse = yield call(updateCollection, action.payload);
       yield put(updateCollectionSuccessed(updateResponse.data.data));
+      break;
+    } catch (error) {
+      if (error.response.status === 500 && i < 4) {
+        yield delay(1000);
+        const updateResponse = yield call(updateCollection, action.payload);
+        yield put(updateCollectionSuccessed(updateResponse.data.data));
+      } else {
+        yield put(updateCollectionFailed(error));
+        break;
+      }
     }
   }
 }

@@ -77,10 +77,11 @@ export class Page extends React.Component {
 
   handleAddClass = (e) => {
     e.preventDefault();
-    const data = {
-      class_sessions: this.state.classesList.map(classItem => ({ id: classItem.id })),
-    };
-    this.props.updateCollectionRequest(data);
+    const classSessions = this.state.classesList.map(classItem => ({ id: classItem.id }));
+    this.props.updateCollectionRequest({
+      collectionId: this.props.classSessions.currentCollection.id,
+      class_sessions: classSessions
+    });
     this.setState({
       classesList: [],
       classValue: ''
