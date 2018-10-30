@@ -122,6 +122,7 @@ export class Page extends React.Component {
     const { classes } = this.props;
     const {
       classesFetching,
+      collectionsFetching,
       classSessions,
       collectionList
     } = this.props.classSessions;
@@ -132,6 +133,7 @@ export class Page extends React.Component {
         <StyledPaper>
           <DragNDropArea
             classesFetching={classesFetching}
+            collectionsFetching={collectionsFetching}
             classSessions={classSessions}
             collectionList={collectionList}
             onClickAddBtn={this.handleOpen}

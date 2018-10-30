@@ -86,22 +86,18 @@ export class DragNDropArea extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      prevProps: props,
       classesItems: props.classSessions || [],
       collectionsItems: props.collectionList || [],
     };
   }
 
   static getDerivedStateFromProps(props, state) {
-    if (props.classSessions !== state.classesItems && !state.changedByUser) {
+    if (props !== state.prevProps) {
       return {
         classesItems: props.classSessions,
         collectionsItems: props.collectionList,
-      };
-    }
-    if (props.collectionList !== state.collectionsItems && !state.changedByUser) {
-      return {
-        classesItems: props.classSessions,
-        collectionsItems: props.collectionList,
+        prevProps: props
       };
     }
     return null;
@@ -237,7 +233,10 @@ export class DragNDropArea extends React.Component {
       collectionsItems,
     } = this.state;
 
-    const { classesFetching } = this.props;
+    const {
+      classesFetching,
+      collectionsFetching
+    } = this.props;
 
     return (
       <DragDropContext onDragEnd={this.onDragEnd}>
@@ -285,9 +284,9 @@ export class DragNDropArea extends React.Component {
                 <List component="nav">
                   <Container>
                     {
-                    classesFetching
+                    collectionsFetching
                       ? (
-                        <Preloader fetching={classesFetching}>
+                        <Preloader fetching={collectionsFetching}>
                           <CircularProgress size={50} />
                         </Preloader>
                       )
@@ -333,6 +332,7 @@ DragNDropArea.propTypes = {
   classSessions: PropTypes.arrayOf(PropTypes.any).isRequired,
   collectionList: PropTypes.arrayOf(PropTypes.any).isRequired,
   classesFetching: PropTypes.bool.isRequired,
+  collectionsFetching: PropTypes.bool.isRequired,
   onClickAddBtn: PropTypes.func.isRequired,
   updateCollection: PropTypes.func.isRequired,
   onClickClass: PropTypes.func.isRequired,

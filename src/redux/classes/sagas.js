@@ -2,8 +2,8 @@ import {
   put,
   call,
   takeLatest,
-  delay
 } from 'redux-saga/effects';
+import { delay } from 'redux-saga';
 
 import { push } from 'connected-react-router';
 

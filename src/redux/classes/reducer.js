@@ -17,6 +17,7 @@ export const initState = {
   currectClass: {},
   currentCollection: {},
   classesFetching: false,
+  collectionsFetching: false,
   error: ''
 };
 
@@ -75,29 +76,29 @@ const deleteClassFailed = error => pipe(
   assoc('error', error)
 );
 
-const createCollectionRequest = () => assoc('classesFetching', true);
+const createCollectionRequest = () => assoc('collectionsFetching', true);
 const createCollectionSuccessed = createResponse => pipe(
-  assoc('classesFetching', false),
+  assoc('collectionsFetching', false),
   over(collectionsLens, append(createResponse)),
 );
 const createCollectionFailed = error => pipe(
-  assoc('classesFetching', false),
+  assoc('collectionsFetching', false),
   assoc('error', error)
 );
 
-const getCollectionsRequest = () => assoc('classesFetching', true);
+const getCollectionsRequest = () => assoc('collectionsFetching', true);
 const getCollectionsSuccessed = collections => pipe(
-  assoc('classesFetching', false),
+  assoc('collectionsFetching', false),
   assoc('collectionList', collections),
 );
 const getCollectionsFailed = error => pipe(
-  assoc('classesFetching', false),
+  assoc('collectionsFetching', false),
   assoc('error', error)
 );
 
-const updateCollectionRequest = () => assoc('classesFetching', true);
+const updateCollectionRequest = () => assoc('collectionsFetching', true);
 const updateCollectionSuccessed = updateResponse => pipe(
-  assoc('classesFetching', false),
+  assoc('collectionsFetching', false),
   over(
     collectionsLens,
     map(
@@ -107,7 +108,7 @@ const updateCollectionSuccessed = updateResponse => pipe(
   assoc('currentCollection', updateResponse),
 );
 const updateCollectionFailed = error => pipe(
-  assoc('classesFetching', false),
+  assoc('collectionsFetching', false),
   assoc('error', error)
 );
 
