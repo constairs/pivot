@@ -65,13 +65,19 @@ export class DragNDropArea extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      classesItems: props.classSessions,
-      collectionsItems: props.collectionList,
+      classesItems: props.classSessions || [],
+      collectionsItems: props.collectionList || [],
     };
   }
 
   static getDerivedStateFromProps(props, state) {
     if (props.classSessions !== state.classesItems && !state.changedByUser) {
+      return {
+        classesItems: props.classSessions,
+        collectionsItems: props.collectionList,
+      };
+    }
+    if (props.collectionList !== state.collectionsItems && !state.changedByUser) {
       return {
         classesItems: props.classSessions,
         collectionsItems: props.collectionList,
@@ -92,7 +98,15 @@ export class DragNDropArea extends React.Component {
             item => (item.id === sourceId ? { ...item, class_sessions: list } : item)
           ),
         }));
-        this.props.updateCollection({ collectionId: sourceId, addedClasses: list });
+
+        const classesIds = list.map(
+          item => ({ id: item.id })
+        );
+
+        this.props.updateCollection({
+          collectionId: sourceId,
+          class_sessions: classesIds
+        });
       }
       return;
     }
@@ -121,7 +135,15 @@ export class DragNDropArea extends React.Component {
         this.setState({
           collectionsItems: resList,
         });
-        this.props.updateCollection({ collectionId: destinationId, addedClasses: list });
+        // this.props.updateCollection({ collectionId: destinationId, addedClasses: list });
+        const classesIds = list.map(
+          item => ({ id: item.id })
+        );
+
+        this.props.updateCollection({
+          collectionId: destinationId,
+          class_sessions: classesIds
+        });
       }
     } else if (sourceId === 'classesDrop') {
       classesItems = reorder(
@@ -143,7 +165,15 @@ export class DragNDropArea extends React.Component {
       this.setState({
         collectionsItems: resList,
       });
-      this.props.updateCollection({ collectionId: destinationId, addedClasses: reorderRes });
+      // this.props.updateCollection({ collectionId: destinationId, addedClasses: reorderRes });
+      const classesIds = reorderRes.map(
+        item => ({ id: item.id })
+      );
+
+      this.props.updateCollection({
+        collectionId: destinationId,
+        class_sessions: classesIds
+      });
     }
   }
 
@@ -162,9 +192,15 @@ export class DragNDropArea extends React.Component {
         )
       ),
     }));
+
+
+    const classesIds = classesList.map(
+      item => ({ id: item.id })
+    );
+
     this.props.updateCollection({
       collectionId: removeData.collectionId,
-      addedClasses: classesList
+      class_sessions: classesIds
     });
   }
 
@@ -212,26 +248,27 @@ export class DragNDropArea extends React.Component {
             <Typography color="primary" component="h1" variant="h4" gutterBottom>
               Collections
             </Typography>
-            {collectionsItems ? (
-              <List component="nav">
-                {
-                  collectionsItems.map(collectionsItem => (
-                    <Collection key={collectionsItem.title}>
-                      <CollectionTitle component="h1" variant="h5" gutterBottom onClick={() => (this.props.onClickCollection(collectionsItem))}>{collectionsItem.title}</CollectionTitle>
-                      <DraggableCollectionsList
-                        collectionsItem={collectionsItem}
-                        droppableId={collectionsItem.id}
-                        removeClass={this.removeClassFromCollection}
-                      />
-                    </Collection>
-                  ))
-                }
-              </List>
-            ) : (
-              <Typography component="p" variant="h5" gutterBottom>
+            {
+              collectionsItems ? (
+                <List component="nav">
+                  {
+                    collectionsItems.map(collectionsItem => (
+                      <Collection key={collectionsItem.title}>
+                        <CollectionTitle component="h1" variant="h5" gutterBottom onClick={() => (this.props.onClickCollection(collectionsItem))}>{collectionsItem.title}</CollectionTitle>
+                        <DraggableCollectionsList
+                          collectionsItem={collectionsItem}
+                          droppableId={collectionsItem.id}
+                          removeClass={this.removeClassFromCollection}
+                        />
+                      </Collection>
+                    ))
+                  }
+                </List>
+              ) : (
+                <Typography component="p" variant="h5" gutterBottom>
                 No collections
-              </Typography>
-            )
+                </Typography>
+              )
             }
             <Button
               type="button"

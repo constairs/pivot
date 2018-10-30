@@ -39,7 +39,7 @@ export class DraggableCollectionsList extends React.Component {
             <Collections isDraggingOver={snapshot.isDraggingOver}>
               <div ref={provided.innerRef}>
                 {
-                  collectionsItem.class_sessions ? (
+                  collectionsItem && collectionsItem.class_sessions.length > 0 ? (
                     <List component="nav">
                       {
                         collectionsItem.class_sessions.map((classItem, index) => (

@@ -4,6 +4,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Modal from '@material-ui/core/Modal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -25,6 +26,21 @@ const Buttons = styled.div`
   button {
     margin-right: 15px;
   }
+`;
+
+const Preloader = styled.div`
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  background-color: rgba(255,255,255, .67);
+  left: 0;
+  top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+  transition: .2s;
+  display: ${props => (props.fetching ? 'flex' : 'none')};
 `;
 
 export class Page extends React.Component {
@@ -69,10 +85,13 @@ export class Page extends React.Component {
   }
 
   render() {
-    const { currectClass } = this.props.classSessions;
+    const { currectClass, classesFetching } = this.props.classSessions;
 
     return (
       <div>
+        <Preloader fetching={classesFetching}>
+          <CircularProgress size={50} />
+        </Preloader>
         <CssBaseline />
         <StyledPaper>
           <Typography component="h2" variant="h6" id="modal-title">

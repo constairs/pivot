@@ -12,6 +12,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 import { bindActionCreators } from 'redux';
@@ -33,6 +34,21 @@ const StyledPaper = styled(Paper)({
 const StyledSelect = styled(Select)({
   width: '200px'
 });
+
+const Preloader = styled.div`
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  background-color: rgba(255,255,255, .67);
+  left: 0;
+  top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+  transition: .2s;
+  display: ${props => (props.fetching ? 'flex' : 'none')};
+`;
 
 export class Page extends React.Component {
   state = {
@@ -72,11 +88,14 @@ export class Page extends React.Component {
   }
 
   render() {
-    const { currentCollection, classSessions } = this.props.classSessions;
+    const { currentCollection, classSessions, classesFetching } = this.props.classSessions;
     const { classValue, classesList } = this.state;
 
     return (
       <div>
+        <Preloader fetching={classesFetching}>
+          <CircularProgress size={50} />
+        </Preloader>
         <CssBaseline />
         <StyledPaper>
           <Typography component="h1" variant="h5" gutterBottom>
@@ -120,11 +139,12 @@ export class Page extends React.Component {
                 <MenuItem value="">
                   <em>None</em>
                 </MenuItem>
-                {classSessions.map(classItem => (
-                  <MenuItem key={classItem.id} value={classItem}>
-                    {classItem.title}
-                  </MenuItem>
-                ))
+                {
+                  classSessions.map(classItem => (
+                    <MenuItem key={classItem.id} value={classItem}>
+                      {classItem.title}
+                    </MenuItem>
+                  ))
                 }
               </StyledSelect>
             </FormControl>

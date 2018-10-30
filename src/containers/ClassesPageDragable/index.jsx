@@ -230,7 +230,7 @@ const styles = theme => ({
     padding: theme.spacing.unit * 4,
   },
   grid: {
-    padding: 20
+    padding: 20,
   },
   typography: {
     useNextVariants: true,
