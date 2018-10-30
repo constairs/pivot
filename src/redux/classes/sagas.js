@@ -101,16 +101,13 @@ export function* getAllCollectionsSaga() {
 export function* updateCollectionSaga(action) {
   try {
     const updateResponse = yield call(updateCollection, action.payload);
-    // const updateResponse = {
-    //   data: {
-    //     class_sessions: action.payload.addedClasses,
-    //     title: action.payload.collectionId,
-    //     id: action.payload.collectionId,
-    //   }
-    // };
     yield put(updateCollectionSuccessed(updateResponse.data.data));
   } catch (error) {
-    yield put(updateCollectionFailed(error.message));
+    yield put(updateCollectionFailed(error));
+    if (error.response.status === 500) {
+      const updateResponse = yield call(updateCollection, action.payload);
+      yield put(updateCollectionSuccessed(updateResponse.data.data));
+    }
   }
 }
 

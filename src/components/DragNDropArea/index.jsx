@@ -5,6 +5,7 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import styled from 'styled-components';
 import { DragDropContext } from 'react-beautiful-dnd';
 
@@ -24,6 +25,26 @@ const CollectionTitle = styled(Typography)`
   :hover {
     text-decoration: underline;
   };
+`;
+
+const Container = styled.div`
+  position: relative;
+  min-height: 100px;
+`;
+
+const Preloader = styled.div`
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background-color: rgba(255,255,255, .67);
+  left: 0;
+  top: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 6;
+  transition: .2s;
+  display: ${props => (props.fetching ? 'flex' : 'none')};
 `;
 
 const reorder = (
@@ -135,7 +156,6 @@ export class DragNDropArea extends React.Component {
         this.setState({
           collectionsItems: resList,
         });
-        // this.props.updateCollection({ collectionId: destinationId, addedClasses: list });
         const classesIds = list.map(
           item => ({ id: item.id })
         );
@@ -165,7 +185,6 @@ export class DragNDropArea extends React.Component {
       this.setState({
         collectionsItems: resList,
       });
-      // this.props.updateCollection({ collectionId: destinationId, addedClasses: reorderRes });
       const classesIds = reorderRes.map(
         item => ({ id: item.id })
       );
@@ -218,6 +237,8 @@ export class DragNDropArea extends React.Component {
       collectionsItems,
     } = this.state;
 
+    const { classesFetching } = this.props;
+
     return (
       <DragDropContext onDragEnd={this.onDragEnd}>
         <Grid container spacing={16}>
@@ -227,7 +248,18 @@ export class DragNDropArea extends React.Component {
             </Typography>
             {
               classesItems ? (
-                <DraggableClassesList clickEditClass={this.clickClassItem} classesItems={classesItems} droppableId="classesDrop" />
+                <Container>
+                  {
+                    classesFetching
+                      ? (
+                        <Preloader fetching={classesFetching}>
+                          <CircularProgress size={50} />
+                        </Preloader>
+                      )
+                      : null
+                  }
+                  <DraggableClassesList clickEditClass={this.clickClassItem} classesItems={classesItems} droppableId="classesDrop" />
+                </Container>
               ) : (
                 <Typography component="p" variant="h5" gutterBottom>
                   No classes
@@ -251,7 +283,17 @@ export class DragNDropArea extends React.Component {
             {
               collectionsItems ? (
                 <List component="nav">
-                  {
+                  <Container>
+                    {
+                    classesFetching
+                      ? (
+                        <Preloader fetching={classesFetching}>
+                          <CircularProgress size={50} />
+                        </Preloader>
+                      )
+                      : null
+                  }
+                    {
                     collectionsItems.map(collectionsItem => (
                       <Collection key={collectionsItem.title}>
                         <CollectionTitle component="h1" variant="h5" gutterBottom onClick={() => (this.props.onClickCollection(collectionsItem))}>{collectionsItem.title}</CollectionTitle>
@@ -263,6 +305,7 @@ export class DragNDropArea extends React.Component {
                       </Collection>
                     ))
                   }
+                  </Container>
                 </List>
               ) : (
                 <Typography component="p" variant="h5" gutterBottom>
@@ -289,6 +332,7 @@ export class DragNDropArea extends React.Component {
 DragNDropArea.propTypes = {
   classSessions: PropTypes.arrayOf(PropTypes.any).isRequired,
   collectionList: PropTypes.arrayOf(PropTypes.any).isRequired,
+  classesFetching: PropTypes.bool.isRequired,
   onClickAddBtn: PropTypes.func.isRequired,
   updateCollection: PropTypes.func.isRequired,
   onClickClass: PropTypes.func.isRequired,

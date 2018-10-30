@@ -9,7 +9,6 @@ import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import Modal from '@material-ui/core/Modal';
 import withStyles from '@material-ui/core/styles/withStyles';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import styled from 'styled-components';
@@ -30,22 +29,6 @@ import { DragNDropArea } from '../../components/DragNDropArea';
 
 const StyledPaper = styled(Paper)`
   padding: 40px;
-`;
-
-const Preloader = styled.div`
-  width: 100%;
-  height: 100vh;
-  position: fixed;
-  background-color: rgba(255,255,255, .67);
-  left: 0;
-  top: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 5;
-  transition: .2s;
-  opacity: ${props => (props.fetching ? '100' : '0')};
-  display: none;
 `;
 
 export class Page extends React.Component {
@@ -145,12 +128,10 @@ export class Page extends React.Component {
 
     return (
       <div>
-        <Preloader fetching={classesFetching}>
-          <CircularProgress className={classes.progress} size={50} />
-        </Preloader>
         <CssBaseline />
         <StyledPaper>
           <DragNDropArea
+            classesFetching={classesFetching}
             classSessions={classSessions}
             collectionList={collectionList}
             onClickAddBtn={this.handleOpen}
