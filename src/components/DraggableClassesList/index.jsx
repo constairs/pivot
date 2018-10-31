@@ -44,38 +44,38 @@ export class DraggableClassesList extends React.Component {
                     classesItems.length > 0 ? (
                       <div>
                         {
-                      classesItems.map((classItem, index) => (
-                        <Draggable
-                          key={classItem.id}
-                          draggableId={classItem.id}
-                          index={index}
-                        >
-                          {
-                            // eslint-disable-next-line
-                            (provided, snapshot) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                              >
-                                <DraggableListItem
-                                  key={classItem.id}
-                                  onDrag={snapshot.isDraggingOver}
-                                >
-                                  <DraggableListItemText primary={classItem.title} />
-                                  <IconButton onClick={() => (
-                                    this.props.clickEditClass(classItem)
-                                  )}
+                          classesItems.map((classItem, index) => (
+                            <Draggable
+                              key={classItem.id}
+                              draggableId={classItem.id}
+                              index={index}
+                            >
+                              {
+                                // eslint-disable-next-line
+                                (provided, snapshot) => (
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
                                   >
-                                    <EditIcon fontSize="small" />
-                                  </IconButton>
-                                </DraggableListItem>
-                                {provided.placeholder}
-                              </div>
-                            )}
-                        </Draggable>
-                      ))
-                    }
+                                    <DraggableListItem
+                                      key={classItem.id}
+                                      onDrag={snapshot.isDraggingOver}
+                                    >
+                                      <DraggableListItemText primary={classItem.title} />
+                                      <IconButton onClick={() => (
+                                        this.props.clickEditClass(classItem)
+                                      )}
+                                      >
+                                        <EditIcon fontSize="small" />
+                                      </IconButton>
+                                    </DraggableListItem>
+                                    {provided.placeholder}
+                                  </div>
+                                )}
+                            </Draggable>
+                          ))
+                        }
                       </div>
                     ) : null
                   }

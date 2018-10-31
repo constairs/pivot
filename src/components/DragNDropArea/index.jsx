@@ -86,6 +86,7 @@ export class DragNDropArea extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      // eslint-disable-next-line
       prevProps: props,
       classesItems: props.classSessions || [],
       collectionsItems: props.collectionList || [],
@@ -254,8 +255,7 @@ export class DragNDropArea extends React.Component {
                         <Preloader fetching={classesFetching}>
                           <CircularProgress size={50} />
                         </Preloader>
-                      )
-                      : null
+                      ) : null
                   }
                   <DraggableClassesList clickEditClass={this.clickClassItem} classesItems={classesItems} droppableId="classesDrop" />
                 </Container>
@@ -291,19 +291,19 @@ export class DragNDropArea extends React.Component {
                         </Preloader>
                       )
                       : null
-                  }
+                    }
                     {
-                    collectionsItems.map(collectionsItem => (
-                      <Collection key={collectionsItem.title}>
-                        <CollectionTitle component="h1" variant="h5" gutterBottom onClick={() => (this.props.onClickCollection(collectionsItem))}>{collectionsItem.title}</CollectionTitle>
-                        <DraggableCollectionsList
-                          collectionsItem={collectionsItem}
-                          droppableId={collectionsItem.id}
-                          removeClass={this.removeClassFromCollection}
-                        />
-                      </Collection>
-                    ))
-                  }
+                      collectionsItems.map(collectionsItem => (
+                        <Collection key={collectionsItem.title}>
+                          <CollectionTitle component="h1" variant="h5" gutterBottom onClick={() => (this.props.onClickCollection(collectionsItem))}>{collectionsItem.title}</CollectionTitle>
+                          <DraggableCollectionsList
+                            collectionsItem={collectionsItem}
+                            droppableId={collectionsItem.id}
+                            removeClass={this.removeClassFromCollection}
+                          />
+                        </Collection>
+                      ))
+                    }
                   </Container>
                 </List>
               ) : (

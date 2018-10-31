@@ -45,11 +45,19 @@ import {
 } from './requests';
 
 export function* createClassSaga(action) {
-  try {
-    const createResponse = yield call(createClass, action.payload);
-    yield put(createClassSuccessed(createResponse.data.data));
-  } catch (error) {
-    yield put(createClassFailed(error.message));
+  for (let i = 0; i < 5; i + 1) {
+    try {
+      const createResponse = yield call(createClass, action.payload);
+      yield put(createClassSuccessed(createResponse.data.data));
+      break;
+    } catch (error) {
+      if (error.response.status === 500 && i < 4) {
+        yield delay(1000);
+      } else {
+        yield put(createClassFailed(error.message));
+        break;
+      }
+    }
   }
 }
 
@@ -62,10 +70,8 @@ export function* getAllClassesSaga() {
     } catch (error) {
       if (error.response.status === 500 && i < 4) {
         yield delay(1000);
-        const classesList = yield call(getAllClasses);
-        yield put(getClassesSuccessed(classesList.data.data));
       } else {
-        yield put(getClassesFailed(error));
+        yield put(getClassesFailed(error.message));
         break;
       }
     }
@@ -73,30 +79,52 @@ export function* getAllClassesSaga() {
 }
 
 export function* updateClassSaga(action) {
-  try {
-    const updateResponse = yield call(updateClass, action.payload);
-    yield put(updateClassSuccessed(updateResponse.data.data));
-  } catch (error) {
-    yield put(updateClassFailed(error.message));
+  for (let i = 0; i < 5; i + 1) {
+    try {
+      const updateResponse = yield call(updateClass, action.payload);
+      yield put(updateClassSuccessed(updateResponse.data.data));
+      break;
+    } catch (error) {
+      if (error.response.status === 500 && i < 4) {
+        yield delay(1000);
+      } else {
+        yield put(updateClassFailed(error.message));
+        break;
+      }
+    }
   }
 }
 
 export function* deleteClassSaga(action) {
-  try {
-    yield call(deleteClass, action.payload);
-    yield put(deleteClassSuccessed(action.payload));
-    yield put(push('/'));
-  } catch (error) {
-    yield put(deleteClassFailed(error.message));
+  for (let i = 0; i < 5; i + 1) {
+    try {
+      yield call(deleteClass, action.payload);
+      yield put(deleteClassSuccessed(action.payload));
+      yield put(push('/'));
+      break;
+    } catch (error) {
+      if (error.response.status === 500 && i < 4) {
+        yield delay(1000);
+      }
+      yield put(deleteClassFailed(error.message));
+      break;
+    }
   }
 }
 
 export function* createCollectionSaga(action) {
-  try {
-    const createResponse = yield call(createCollection, action.payload);
-    yield put(createCollectionSuccessed(createResponse.data.data));
-  } catch (error) {
-    yield put(createCollectionFailed(error.message));
+  for (let i = 0; i < 5; i + 1) {
+    try {
+      const createResponse = yield call(createCollection, action.payload);
+      yield put(createCollectionSuccessed(createResponse.data.data));
+      break;
+    } catch (error) {
+      if (error.response.status === 500 && i < 4) {
+        yield delay(1000);
+      }
+      yield put(createCollectionFailed(error.message));
+      break;
+    }
   }
 }
 
@@ -109,10 +137,8 @@ export function* getAllCollectionsSaga() {
     } catch (error) {
       if (error.response.status === 500 && i < 4) {
         yield delay(1000);
-        const collectionsList = yield call(getAllCollections);
-        yield put(getCollectionsSuccessed(collectionsList.data.data));
       } else {
-        yield put(getCollectionsFailed(error));
+        yield put(getCollectionsFailed(error.message));
         break;
       }
     }
@@ -128,10 +154,8 @@ export function* updateCollectionSaga(action) {
     } catch (error) {
       if (error.response.status === 500 && i < 4) {
         yield delay(1000);
-        const updateResponse = yield call(updateCollection, action.payload);
-        yield put(updateCollectionSuccessed(updateResponse.data.data));
       } else {
-        yield put(updateCollectionFailed(error));
+        yield put(updateCollectionFailed(error.message));
         break;
       }
     }
